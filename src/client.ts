@@ -1,0 +1,53 @@
+/**
+ * HostLogic Enterprise API client.
+ * Wraps /api/v1/receptionist/* REST endpoints.
+ */
+
+const DEFAULT_API_URL = 'https://shimmering-playfulness-production-2588.up.railway.app';
+
+export class HostLogicClient {
+    private readonly baseUrl: string;
+    private readonly apiKey: string;
+
+    constructor(apiKey: string, baseUrl?: string) {
+        if (!apiKey) throw new Error('HOSTLOGIC_API_KEY is required');
+        this.apiKey  = apiKey;
+        this.baseUrl = (baseUrl ?? process.env.HOSTLOGIC_API_URL ?? DEFAULT_API_URL).replace(/\/$/, '');
+    }
+
+    async get<T>(path: string): Promise<T> {
+        return this.request<T>('GET', path);
+    }
+
+    async post<T>(path: string, body: unknown): Promise<T> {
+        return this.request<T>('POST', path, body);
+    }
+
+    private async request<T>(method: string, path: string, body?: unknown): Promise<T> {
+        const url = `${this.baseUrl}${path}`;
+        const res = await fetch(url, {
+            method,
+            headers: {
+                'Authorization': `Bearer ${this.apiKey}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+        });
+
+        const text = await res.text();
+
+        if (!res.ok) {
+            let message = `HostLogic API error ${res.status}`;
+            try {
+                const json = JSON.parse(text) as { message?: string; error?: string };
+                message = json.message ?? json.error ?? message;
+            } catch {
+                // non-JSON error body
+            }
+            throw new Error(message);
+        }
+
+        return JSON.parse(text) as T;
+    }
+}
