@@ -2,16 +2,22 @@
   "name": "@hostlogic/mcp",
   "version": "1.0.0",
   "description": "MCP server for HostLogic AI Receptionist — connect Claude, Cursor or any MCP client to the HostLogic Enterprise API",
-  "keywords": ["mcp", "hostlogic", "ai-receptionist", "pms", "hospitality"],
+  "keywords": [
+    "mcp",
+    "hostlogic",
+    "ai-receptionist",
+    "pms",
+    "hospitality"
+  ],
   "homepage": "https://hostlogic.io/enterprise/mcp",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mitalproperties/hostlogic-mcp.git"
+    "url": "git+https://github.com/mitalproperties/hostlogic-mcp.git"
   },
   "license": "MIT",
   "type": "module",
   "bin": {
-    "hostlogic-mcp": "./dist/stdio.js"
+    "hostlogic-mcp": "dist/stdio.js"
   },
   "main": "./dist/server.js",
   "exports": {

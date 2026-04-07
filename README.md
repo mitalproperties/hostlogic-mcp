@@ -100,8 +100,8 @@ After approval your key arrives by email in the format `KEY_ID.KEY_SECRET`. Stor
 ## Self-hosting the HTTP server
 
 ```bash
-git clone https://github.com/mitalproperties/hostlogic-mcp
-cd hostlogic-mcp
+git clone https://github.com/mitalproperties/@hostlogic/mcp
+cd @hostlogic/mcp
 npm install
 npm run build
 PORT=3000 node dist/http.js
