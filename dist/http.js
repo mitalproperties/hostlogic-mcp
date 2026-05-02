@@ -13,7 +13,20 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import { createServer } from './server.js';
 const app = express();
 const PORT = Number(process.env.PORT ?? 3000);
+// BUG 4 FIX: Remove Express fingerprint and add security headers
+app.disable('x-powered-by');
+app.use((_req, res, next) => {
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    next();
+});
 app.use(express.json({ limit: '1mb' }));
+// BUG 5 FIX: Return clean JSON at root instead of bare Express 404
+app.get('/', (_req, res) => {
+    res.json({ name: 'HostLogic MCP Server', docs: 'https://hostlogic.io/enterprise/mcp' });
+});
 // Health check
 app.get('/health', (_req, res) => {
     res.json({ status: 'ok', service: '@hostlogic/mcp', version: '1.0.0' });
@@ -22,7 +35,9 @@ app.get('/health', (_req, res) => {
 app.post('/mcp', async (req, res) => {
     const authHeader = req.headers['authorization'] ?? '';
     const apiKey = authHeader.replace(/^Bearer\s+/i, '').trim();
-    if (!apiKey) {
+    // BUG 1 FIX: Validate key format KEY_ID.KEY_SECRET before creating any server instance
+    const keyParts = apiKey.split('.');
+    if (!apiKey || keyParts.length !== 2 || !keyParts[0] || !keyParts[1]) {
         res.status(401).json({
             error: 'Unauthorized',
             message: 'Provide your HostLogic API key as: Authorization: Bearer KEY_ID.KEY_SECRET',

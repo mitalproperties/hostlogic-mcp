@@ -39,6 +39,12 @@ export class HostLogicClient {
             catch {
                 // non-JSON error body
             }
+            // BUG 2 FIX: Sanitize SQL/infra details to prevent internal info leakage
+            const sqlLeakPatterns = ['SQLSTATE', 'Connection:', 'Host:', 'Port:', 'Database:', 'forge.'];
+            const hasSqlLeak = sqlLeakPatterns.some(pattern => message.includes(pattern));
+            if (hasSqlLeak) {
+                message = 'Invalid API key or unauthorized.';
+            }
             throw new Error(message);
         }
         return JSON.parse(text);

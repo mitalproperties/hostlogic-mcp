@@ -23,7 +23,7 @@ export function createServer(apiKey) {
     // ─────────────────────────────────────────────
     // Tool: create_session
     // ─────────────────────────────────────────────
-    server.tool('create_session', 'Create a new ConvAI voice/text session for a property. Returns a signed WebSocket URL that can be passed to ElevenLabs ConvAI client SDKs for real-time voice conversation.', {
+    server.tool('create_session', 'Create a new voice/text session for a property. Returns a signed real-time session URL and WebSocket endpoint for voice conversation. Pass the signed_url to any WebSocket-compatible voice client.', {
         property_id: z.number().int().positive().describe('The HostLogic property ID to create a session for. The API key must be scoped to this property or have no tenant restriction.'),
     }, async ({ property_id }) => {
         const data = await client.post('/api/v1/receptionist/sessions', { property_id });

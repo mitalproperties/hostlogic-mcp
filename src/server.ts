@@ -34,7 +34,7 @@ export function createServer(apiKey: string): McpServer {
     // ─────────────────────────────────────────────
     server.tool(
         'create_session',
-        'Create a new ConvAI voice/text session for a property. Returns a signed WebSocket URL that can be passed to ElevenLabs ConvAI client SDKs for real-time voice conversation.',
+        'Create a new voice/text session for a property. Returns a signed real-time session URL and WebSocket endpoint for voice conversation. Pass the signed_url to any WebSocket-compatible voice client.',
         {
             property_id: z.number().int().positive().describe(
                 'The HostLogic property ID to create a session for. The API key must be scoped to this property or have no tenant restriction.',
