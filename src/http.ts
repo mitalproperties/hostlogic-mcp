@@ -9,6 +9,8 @@
  * Deploy on Railway: set PORT env var (default 3000).
  */
 
+import './instrument.js';
+import * as Sentry from '@sentry/node';
 import express, { type Request, type Response } from 'express';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { createServer } from './server.js';
@@ -86,6 +88,8 @@ app.get('/mcp', (_req: Request, res: Response) => {
         auth:        'Authorization: Bearer KEY_ID.KEY_SECRET',
     });
 });
+
+Sentry.setupExpressErrorHandler(app);
 
 app.listen(PORT, () => {
     process.stdout.write(`[hostlogic-mcp] HTTP server listening on :${PORT}\n`);
