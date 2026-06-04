@@ -15,14 +15,30 @@ export class HostLogicClient {
         this.baseUrl = (baseUrl ?? process.env.HOSTLOGIC_API_URL ?? DEFAULT_API_URL).replace(/\/$/, '');
     }
 
+    /**
+     * Perform a GET request against the HostLogic API.
+     * @param path API path starting with `/`, e.g. `/api/v1/receptionist/agents`
+     * @returns Parsed JSON response body
+     */
     async get<T>(path: string): Promise<T> {
         return this.request<T>('GET', path);
     }
 
+    /**
+     * Perform a POST request against the HostLogic API.
+     * @param path API path starting with `/`
+     * @param body Request payload (will be JSON-serialised)
+     * @returns Parsed JSON response body
+     */
     async post<T>(path: string, body: unknown): Promise<T> {
         return this.request<T>('POST', path, body);
     }
 
+    /**
+     * Core HTTP request helper shared by `get` and `post`.
+     * Throws an Error with a sanitised message on non-2xx responses —
+     * internal SQL/infra details are stripped to prevent information leakage.
+     */
     private async request<T>(method: string, path: string, body?: unknown): Promise<T> {
         const url = `${this.baseUrl}${path}`;
         const res = await fetch(url, {

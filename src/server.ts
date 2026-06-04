@@ -1,3 +1,8 @@
+/**
+ * MCP server factory.
+ * Defines and registers all four HostLogic tools (list_agents, create_session,
+ * send_message, get_usage) on a new McpServer instance backed by HostLogicClient.
+ */
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { HostLogicClient } from './client.js';
