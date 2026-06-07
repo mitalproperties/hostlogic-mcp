@@ -2,7 +2,7 @@
  * HostLogic Enterprise API client.
  * Wraps /api/v1/receptionist/* REST endpoints.
  */
-const DEFAULT_API_URL = 'https://shimmering-playfulness-production-2588.up.railway.app';
+const DEFAULT_API_URL = 'https://hostlogic.io';
 export class HostLogicClient {
     baseUrl;
     apiKey;
