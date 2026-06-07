@@ -1,0 +1,1 @@
+{"version":3,"file":"instrument.js","sourceRoot":"","sources":["../src/instrument.ts"],"names":[],"mappings":"AAAA;;;;GAIG;AACH,OAAO,KAAK,MAAM,MAAM,cAAc,CAAC;AAEvC,MAAM,CAAC,IAAI,CAAC;IACR,GAAG,EAAE,OAAO,CAAC,GAAG,CAAC,UAAU;IAC3B,WAAW,EAAE,OAAO,CAAC,GAAG,CAAC,QAAQ,IAAI,YAAY;CACpD,CAAC,CAAC"}

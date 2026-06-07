@@ -8,5 +8,5 @@
  *
  * Deploy on Railway: set PORT env var (default 3000).
  */
-export {};
+import './instrument.js';
 //# sourceMappingURL=http.d.ts.map
