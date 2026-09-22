@@ -13,6 +13,12 @@ Connect Claude, Cursor, or any [Model Context Protocol](https://modelcontextprot
 | `send_message` | Send a text message to the AI receptionist |
 | `get_usage` | Usage statistics for your API key (last 30 days) |
 
+The hosted service also exposes a physically separate, owner-only Ops MCP at
+`/ops/mcp`. It is not accessible with Enterprise customer API keys. Its tools
+are `list_open_incidents`, `get_incident`, `acknowledge_incident`, and
+`resolve_incident`; configure it only with the dedicated environment variables
+documented in `.env.example`.
+
 ---
 
 ## Option 1 — Hosted endpoint (zero install)
