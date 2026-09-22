@@ -31,6 +31,7 @@
     "dev:stdio": "tsx src/stdio.ts",
     "dev:http": "tsx src/http.ts",
     "start": "node dist/http.js",
+    "test": "npm run build && node --test dist/*.test.js",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
