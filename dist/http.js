@@ -13,6 +13,8 @@ import * as Sentry from '@sentry/node';
 import express from 'express';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { createServer } from './server.js';
+import { createOpsServer } from './ops-server.js';
+import { isValidOpsBearer } from './ops-auth.js';
 const app = express();
 const PORT = Number(process.env.PORT ?? 3000);
 // BUG 4 FIX: Remove Express fingerprint and add security headers
@@ -32,6 +34,43 @@ app.get('/', (_req, res) => {
 // Health check
 app.get('/health', (_req, res) => {
     res.json({ status: 'ok', service: '@hostlogic/mcp', version: '1.0.0' });
+});
+// Owner-only operations MCP. This is deliberately separate from /mcp:
+// customer Enterprise API keys can never reach incident-management tools.
+app.post('/ops/mcp', async (req, res) => {
+    const endpointToken = process.env.HOSTLOGIC_OPS_MCP_TOKEN ?? '';
+    if (!isValidOpsBearer(req.headers['authorization'], endpointToken)) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+    }
+    const monitoringToken = process.env.MONITORING_MOBILE_API_TOKEN ?? '';
+    const actingUserId = process.env.HOSTLOGIC_OPS_ACTING_USER_ID ?? '';
+    if (!monitoringToken || !/^\d+$/.test(actingUserId)) {
+        res.status(503).json({ error: 'Ops MCP is not configured' });
+        return;
+    }
+    try {
+        const server = createOpsServer(monitoringToken, actingUserId);
+        const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
+        res.on('close', () => {
+            transport.close().catch(() => { });
+            server.close().catch(() => { });
+        });
+        await server.connect(transport);
+        await transport.handleRequest(req, res, req.body);
+    }
+    catch (err) {
+        Sentry.captureException(err);
+        if (!res.headersSent)
+            res.status(500).json({ error: 'Internal server error' });
+    }
+});
+app.get('/ops/mcp', (_req, res) => {
+    res.json({
+        name: 'HostLogic Ops MCP',
+        tools: ['list_open_incidents', 'get_incident', 'acknowledge_incident', 'resolve_incident'],
+        auth: 'Authorization: Bearer <dedicated Ops MCP token>',
+    });
 });
 // MCP endpoint — stateless, one server instance per request
 app.post('/mcp', async (req, res) => {
